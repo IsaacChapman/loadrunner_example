@@ -13,16 +13,19 @@ resource_pools:      # Need to be created by Solano Labs staff
 # Sensitive environment variables should be set with `solano config:add <scope> <key> <value>` cli command
 environment:
   'LR_USER_NAME': 'solano'
-  'LR_ROOT': 'C:\\Users\\solano\\repos' # Escaped path for build dir on LoadRunner
-  'LR_COMMAND': 'C:\\Program\ Files\ \(x86\)\\HP\\LoadRunner\\bin\\Wlrun.exe'
+  'LR_ROOT': '/cygdrive/c/Users/solano/repos' # Escaped path for build dir on LoadRunner
+  'LR_COMMAND': '/cygdrive/c/Program\ Files\ \(x86\)/HP/LoadRunner/bin/Wlrun.exe'
   'LR_TEST_FILE': 'travel_agent.lrs'
-  'LR_RESULTS_ROOT': 'C:\\Temp\\LR_results'
+  'LR_RESULTS_ROOT': '/cygdrive/c/Temp/LR_results'
 
 hooks:
   pre_setup: |
     set -e # Exit on script error
+    set -x # Echo while developing
+    # Ensure repo directory
+    ssh ${LR_USER_NAME}@${LOADRUNNER_HOST} mkdir -p $LR_ROOT/`basename $TDDIUM_REPO_ROOT`
     # Copy repo from linux worker to LoadRunner
-    scp -r $TDDIUM_REPO_ROOT ${LR_USER_NAME}@${LOADRUNNER_HOST}:${LR_ROOT}\\`basename $TDDIUM_REPO_ROOT`
+    scp $LR_TEST_FILE ${LR_USER_NAME}@${LOADRUNNER_HOST}:${LR_ROOT}/`basename $TDDIUM_REPO_ROOT`/
 
 timeout_hooks: 300  # Setup hooks timeout (in secondes) Default: 300
 timeout: 900        # Test timeout (in seconds) Default: 900
@@ -31,14 +34,14 @@ tests:
   - name: 'LoadRunner Test'
     command: |
       set -e # Exit on script error
+      set -x # Echo while developing
+      # Ensure results dir exists
+      ssh ${LR_USER_NAME}@${LOADRUNNER_HOST} mkdir -p ${LR_RESULTS_ROOT}
       # Execute test
-      ssh ${LR_USER_NAME}@${LOADRUNNER_HOST} "$LR_COMMAND" -Run \
-        -TestPath "${LR_ROOT}\\`basename $TDDIUM_REPO_ROOT`\\${LR_TEST_FILE}" \
-        -ResultLocation "${LR_RESULTS_ROOT}" \
-        -ResultName Res_${TDDIUM_SESSION_ID}
+      ssh ${LR_USER_NAME}@${LOADRUNNER_HOST} \"$LR_COMMAND\" -Run -TestPath \"${LR_ROOT}/`basename $TDDIUM_REPO_ROOT`/${LR_TEST_FILE}\" -ResultLocation \"${LR_RESULTS_ROOT}\" -ResultName \"Res_${TDDIUM_SESSION_ID}\"
       # Instead of arbitrary sleep, check on HP LoadRunner Controller process???
       sleep 750
       # Collect results (http://docs.solanolabs.com/Setup/interacting-with-build-environment/)
-      scp -r ${LR_USER_NAME}@${LOADRUNNER_HOST}:${LR_RESULTS_ROOT}\\Res_${TDDIUM_SESSION_ID} $TMPDIR/
+      scp -r ${LR_USER_NAME}@${LOADRUNNER_HOST}:${LR_RESULTS_ROOT}/Res_${TDDIUM_SESSION_ID} $TMPDIR/
       cd $TMPDIR
       tar czf $HOME/results/$TDDIUM_SESSION_ID/$TDDIUM_TEST_EXEC_ID/Res_${TDDIUM_SESSION_ID}.tar.gz Res_${TDDIUM_SESSION_ID}
