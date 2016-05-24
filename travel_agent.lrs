@@ -15,7 +15,7 @@ GlobalDir=
 
 {ScenarioPrivateConfig
 Path=
-Author=Administrator
+Author=solano
 Subject=
 Description=
 Hosts=1
@@ -24,7 +24,7 @@ Groups=0
 Vusers=10
 Tranzactions=0
 Rendezvous=0
-Result_file=C:\Users\Administrator\AppData\Local\Temp\2\res\res.lrr
+Result_file=C:\Users\solano\AppData\Local\Temp\2\res\res.lrr
 ResCleanName=res
 ResSymName=
 DEFAULT_NFS_LESS_MODE=1
@@ -4321,68 +4321,130 @@ XMLData=<Mediators distribution = "1" enabled= "1" ><Mediator type= "SARM" enabl
 }
 
 {ScenarioSchedulerConfig
-<?xml version="1.0" encoding="utf-16"?>
-<LoadTest>
-  <Schedulers>
-    <CurrentSchedulerId>1</CurrentSchedulerId>
-    <StartMode>
-      <StartModeType>Immediately</StartModeType>
-      <StartModes>
-        <Immediately />
-        <DelayAfterLTStart>0</DelayAfterLTStart>
-        <StartAt>2016-05-24T01:01:14.6273692+00:00</StartAt>
-      </StartModes>
-    </StartMode>
-    <Scheduler ID="1">
-      <Name>Schedule 1</Name>
-      <Manual>
-        <SchedulerType>Global</SchedulerType>
-        <Global>
-          <Scheduling>
-            <IsDefaultScheduler>true</IsDefaultScheduler>
-            <Initialization>
-              <InitAll>
-                <StartCondition>
-                  <PrevAction />
-                </StartCondition>
-              </InitAll>
-              <DelayAfterInitialization>0</DelayAfterInitialization>
-            </Initialization>
-            <DynamicScheduling>
-              <RampUp>
-                <StartCondition>
-                  <PrevAction />
-                </StartCondition>
-                <Batch>
-                  <Count>2</Count>
-                  <Interval>30</Interval>
-                </Batch>
-                <TotalVusersNumber>10</TotalVusersNumber>
-              </RampUp>
-              <Duration>
-                <StartCondition>
-                  <PrevAction />
-                </StartCondition>
-                <RunFor>300</RunFor>
-              </Duration>
-              <RampDownAll>
-                <StartCondition>
-                  <PrevAction />
-                </StartCondition>
-                <Batch>
-                  <Count>5</Count>
-                  <Interval>30</Interval>
-                </Batch>
-              </RampDownAll>
-            </DynamicScheduling>
-          </Scheduling>
-        </Global>
-        <Groups>
-          <InitAllBeforeStart>false</InitAllBeforeStart>
-        </Groups>
-      </Manual>
-    </Scheduler>
-  </Schedulers>
+<?xml version="1.0" encoding="utf-16"?>
+
+<LoadTest>
+
+  <Schedulers>
+
+    <CurrentSchedulerId>1</CurrentSchedulerId>
+
+    <StartMode>
+
+      <StartModeType>Immediately</StartModeType>
+
+      <StartModes>
+
+        <Immediately />
+
+        <DelayAfterLTStart>0</DelayAfterLTStart>
+
+        <StartAt>2016-05-24T01:01:14.6273692+00:00</StartAt>
+
+      </StartModes>
+
+    </StartMode>
+
+    <Scheduler ID="1">
+
+      <Name>Schedule 1</Name>
+
+      <Manual>
+
+        <SchedulerType>Global</SchedulerType>
+
+        <Global>
+
+          <Scheduling>
+
+            <IsDefaultScheduler>true</IsDefaultScheduler>
+
+            <Initialization>
+
+              <InitAll>
+
+                <StartCondition>
+
+                  <PrevAction />
+
+                </StartCondition>
+
+              </InitAll>
+
+              <DelayAfterInitialization>0</DelayAfterInitialization>
+
+            </Initialization>
+
+            <DynamicScheduling>
+
+              <RampUp>
+
+                <StartCondition>
+
+                  <PrevAction />
+
+                </StartCondition>
+
+                <Batch>
+
+                  <Count>2</Count>
+
+                  <Interval>30</Interval>
+
+                </Batch>
+
+                <TotalVusersNumber>10</TotalVusersNumber>
+
+              </RampUp>
+
+              <Duration>
+
+                <StartCondition>
+
+                  <PrevAction />
+
+                </StartCondition>
+
+                <RunFor>300</RunFor>
+
+              </Duration>
+
+              <RampDownAll>
+
+                <StartCondition>
+
+                  <PrevAction />
+
+                </StartCondition>
+
+                <Batch>
+
+                  <Count>5</Count>
+
+                  <Interval>30</Interval>
+
+                </Batch>
+
+              </RampDownAll>
+
+            </DynamicScheduling>
+
+          </Scheduling>
+
+        </Global>
+
+        <Groups>
+
+          <InitAllBeforeStart>false</InitAllBeforeStart>
+
+        </Groups>
+
+      </Manual>
+
+    </Scheduler>
+
+  </Schedulers>
+
 </LoadTest>
 }
 
