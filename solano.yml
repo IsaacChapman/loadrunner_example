@@ -1,0 +1,44 @@
+# solano.yml
+# 
+# 1. Use "resource_pools" to rate-limit worker connections
+# 2. Requires SSH daemon/service on LoadRunner host (Note #1)
+# 3. Worker identity key used for SSH authentication
+#    See http://docs.solanolabs.com/AccountManagement/ssh-key-management/#solano-worker-identity-key
+#    Key listed at https://ci.solanolabs.com/organizations/<org-id>/edit/worker_identity
+
+resource_pools:      # Need to be created by Solano Labs staff
+  - loadrunner_test  # Provides $LOADRUNNER_HOST environment variable
+
+# Environment variables used in the build: http://docs.solanolabs.com/Setup/setting-environment-variables/
+# Sensitive environment variables should be set with `solano config:add <scope> <key> <value>` cli command
+environment:
+  'LR_USER_NAME': 'solano'
+  'LR_ROOT': 'C:\\Users\\solano\\repos' # Escaped path for build dir on LoadRunner
+  'LR_COMMAND': 'C:\\Program\ Files\ \(x86\)\\HP\\LoadRunner\\bin\\Wlrun.exe'
+  'LR_TEST_FILE': 'travel_agent.lrs'
+  'LR_RESULTS_ROOT': 'C:\\Temp\\LR_results'
+
+hooks:
+  pre_setup: |
+    set -e # Exit on script error
+    # Copy repo from linux worker to LoadRunner
+    scp -r $TDDIUM_REPO_ROOT ${LR_USER_NAME}@${LOADRUNNER_HOST}:${LR_ROOT}\\`basename $TDDIUM_REPO_ROOT`
+
+timeout_hooks: 300  # Setup hooks timeout (in secondes) Default: 300
+timeout: 900        # Test timeout (in seconds) Default: 900
+
+tests:
+  - name: 'LoadRunner Test'
+    command: |
+      set -e # Exit on script error
+      # Execute test
+      ssh ${LR_USER_NAME}@${LOADRUNNER_HOST} "$LR_COMMAND" -Run \
+        -TestPath "${LR_ROOT}\\`basename $TDDIUM_REPO_ROOT`\\${LR_TEST_FILE}" \
+        -ResultLocation "${LR_RESULTS_ROOT}" \
+        -ResultName Res_${TDDIUM_SESSION_ID}
+      # Instead of arbitrary sleep, check on HP LoadRunner Controller process???
+      sleep 750
+      # Collect results (http://docs.solanolabs.com/Setup/interacting-with-build-environment/)
+      scp -r ${LR_USER_NAME}@${LOADRUNNER_HOST}:${LR_RESULTS_ROOT}\\Res_${TDDIUM_SESSION_ID} $TMPDIR/
+      cd $TMPDIR
+      tar czf $HOME/results/$TDDIUM_SESSION_ID/$TDDIUM_TEST_EXEC_ID/Res_${TDDIUM_SESSION_ID}.tar.gz Res_${TDDIUM_SESSION_ID}
